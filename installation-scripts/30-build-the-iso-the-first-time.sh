@@ -38,14 +38,14 @@ echo
 	buildFolder=$HOME"/arcolinuxb-build"
 	outFolder=$HOME"/ArcoLinuxB-Out"
 	archisoVersion=$(sudo pacman -Q archiso)
-	
+
 	# If you are ready to use your personal repo and personal packages
 	# https://arcolinux.com/use-our-knowledge-and-create-your-own-icon-theme-combo-use-github-to-saveguard-your-work/
 	# 1. set variable personalrepo to true in this file (default:false)
 	# 2. change the file personal-repo to reflect your repo
 	# 3. add your applications to the file packages-personal-repo.x86_64
 
-	personalrepo=false
+	personalrepo=true
 
 	echo "################################################################## "
 	echo "Building the desktop                   : "$desktop
@@ -209,7 +209,7 @@ echo
 	echo "Copying the new packages.x86_64 file to the build folder"
 	cp -f ../archiso/packages.x86_64 $buildFolder/archiso/packages.x86_64
 	echo
-	
+
 	if [ $personalrepo == true ]; then
 		echo "Adding packages from your personal repository - packages-personal-repo.x86_64"
 		printf "\n" | sudo tee -a $buildFolder/archiso/packages.x86_64
@@ -268,7 +268,7 @@ echo
 	sed -i 's/'$oldname4'/'$newname4'/g' $buildFolder/archiso/efiboot/loader/entries/5-nomodeset.conf
 
 	sed -i 's/'$oldname4'/'$newname4'/g' $buildFolder/archiso/grub/grub.cfg
-	
+
 	echo "Adding time to /etc/dev-rel"
 	date_build=$(date -d now)
 	echo "Iso build on : "$date_build
@@ -286,6 +286,29 @@ echo
 
 	echo "Cleaning the cache from /var/cache/pacman/pkg/"
 	yes | sudo pacman -Scc
+
+
+
+echo "###########################################################"
+echo "Phase 6.1 :"
+echo "- Checking package list for any packages from AUR"
+	#checking which helper is installed
+	yay_install=false
+	if pacman -Qi yay &> /dev/null; then
+		while read pkg
+		do
+			if [[ "$pkg" != \#* ]] && [ "$pkg" ! -z ]; then
+				echo "Checking package = $pkg"
+				pacman -Si "$pkg" &> /dev/null || yay -S --noconfirm $pkg
+
+			fi
+			sleep 1
+		done<$buildFolder/archiso/packages.x86_64
+	fi
+
+
+
+exit 1
 
 echo
 echo "################################################################## "
@@ -330,7 +353,7 @@ echo
 	echo "Moving pkglist.x86_64.txt"
 	echo "########################"
 	cp $buildFolder/iso/arch/pkglist.x86_64.txt  $outFolder/$isoLabel".pkglist.txt"
-	
+
 echo
 echo "##################################################################"
 tput setaf 2
