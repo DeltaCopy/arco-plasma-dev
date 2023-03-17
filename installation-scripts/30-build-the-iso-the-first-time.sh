@@ -213,7 +213,13 @@ echo
 	if [ $personalrepo == true ]; then
 		echo "Adding packages from your personal repository - packages-personal-repo.x86_64"
 		printf "\n" | sudo tee -a $buildFolder/archiso/packages.x86_64
-		cat ../archiso/packages-personal-repo.x86_64 | sudo tee -a $buildFolder/archiso/packages.x86_64
+		#cat ../archiso/packages-personal-repo.x86_64 | sudo tee -a $buildFolder/archiso/packages.x86_64
+		if sh gen-package-file.sh; then
+			echo "Package list merged"
+		else
+			echo "Package list merge failed"
+			exit 1
+		fi
 	fi
 
 	echo
@@ -292,17 +298,14 @@ echo
 echo "###########################################################"
 echo "Phase 6.1 :"
 echo "- Checking package list for any packages from AUR"
-	#checking which helper is installed
-	yay_install=false
 	if pacman -Qi yay &> /dev/null; then
 		while read pkg
 		do
-			if [[ "$pkg" != \#* ]] && [ "$pkg" ! -z ]; then
+			if [[ "$pkg" != \#* ]] && [[ ! -z  "$pkg" ]]; then
 				echo "Checking package = $pkg"
 				pacman -Si "$pkg" &> /dev/null || yay -S --noconfirm $pkg
 
 			fi
-			sleep 1
 		done<$buildFolder/archiso/packages.x86_64
 	fi
 
