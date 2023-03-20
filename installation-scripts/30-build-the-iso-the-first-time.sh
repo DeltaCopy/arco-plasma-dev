@@ -29,7 +29,7 @@ echo
 	desktop="plasma"
 	dmDesktop="plasma"
 
-	arcolinuxVersion='v23.04.02'
+	arcolinuxVersion='v23.04.03'
 
 	isoLabel='arcolinuxb-'$desktop'-'$arcolinuxVersion'-x86_64.iso'
 
@@ -214,7 +214,7 @@ echo
 		echo "Adding packages from your personal repository - packages-personal-repo.x86_64"
 		printf "\n" | sudo tee -a $buildFolder/archiso/packages.x86_64
 		#cat ../archiso/packages-personal-repo.x86_64 | sudo tee -a $buildFolder/archiso/packages.x86_64
-		if sh gen-package-file.sh; then
+		if sh gen-package-file.sh "plasma" "$buildFolder"; then
 			echo "Package list merged"
 		else
 			echo "Package list merge failed"
@@ -294,25 +294,6 @@ echo
 	yes | sudo pacman -Scc
 
 
-
-echo "###########################################################"
-echo "Phase 6.1 :"
-echo "- Checking package list for any packages from AUR"
-	if pacman -Qi yay &> /dev/null; then
-		while read pkg
-		do
-			if [[ "$pkg" != \#* ]] && [[ ! -z  "$pkg" ]]; then
-				echo "Checking package = $pkg"
-				pacman -Si "$pkg" &> /dev/null || yay -S --noconfirm $pkg
-
-			fi
-		done<$buildFolder/archiso/packages.x86_64
-	fi
-
-
-
-exit 1
-
 echo
 echo "################################################################## "
 tput setaf 2
@@ -338,20 +319,20 @@ tput sgr0
 echo "###################################################################"
 echo
 
-	cd $outFolder
+	
 
 	echo "Creating checksums for : "$isoLabel
 	echo "##################################################################"
 	echo
 	echo "Building sha1sum"
 	echo "########################"
-	sha1sum $isoLabel | tee $isoLabel.sha1
+	sha1sum "$outFolder/$isoLabel" | tee "$outFolder/$isoLabel.sha1"
 	echo "Building sha256sum"
 	echo "########################"
-	sha256sum $isoLabel | tee $isoLabel.sha256
+	sha256sum "$outFolder/$isoLabel" | tee "$outFolder/$isoLabel.sha256"
 	echo "Building md5sum"
 	echo "########################"
-	md5sum $isoLabel | tee $isoLabel.md5
+	md5sum "$outFolder/$isoLabel" | tee "$outFolder/$isoLabel.md5"
 	echo
 	echo "Moving pkglist.x86_64.txt"
 	echo "########################"
@@ -367,7 +348,7 @@ echo "################################################################## "
 echo
 
 	echo "Deleting the build folder if one exists - takes some time"
-	[ -d $buildFolder ] && sudo rm -rf $buildFolder
+	#[ -d $buildFolder ] && sudo rm -rf $buildFolder
 
 echo
 echo "##################################################################"
