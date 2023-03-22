@@ -6,20 +6,32 @@ echo "This ignores duplicates, ignore empty lines"
 echo "##################################################################"
 
 
-desktop=$1
+packages_x86_64=$1
 buildFolder=$2
+
+if [ -z "$packages_x86_64" ] || [ -z $buildFolder ]; then
+  echo "Desktop or build folder name cannot be empty"
+  exit 1
+fi
 
 packages="$buildFolder/archiso/packages.x86_64"
 packages_personal="../archiso/packages-personal-repo.x86_64"
 packages_tmp=()
-
-case $desktop in
-  "plasma")
-    echo "plasma"
-    wget -q https://raw.githubusercontent.com/arcolinuxb/arco-plasma/master/archiso/packages.x86_64 -O $packages
+github_arcob_url="https://raw.githubusercontent.com/arcolinuxb/arco-$desktop/master/archiso/packages.x86_64"
+github_arcod_url="https://raw.githubusercontent.com/arcolinux/arcolinuxd-iso/master/archiso/packages.x86_64"
+# a guard in case we don't get a valid desktop name
+case $packages_x86_64 in
+  "arco-plasma")
+    echo "Generating packages list for ArcoLinuxB-Plasma"
+    desktop="plasma"
+    wget -q "$github_arcob_url" -O $packages
+  ;;
+  "arco-desktop")
+    echo "Generating packages list for ArcoLinux-D"
+    wget -q "$github_arcod_url" -O $packages
   ;;
   *)
-  echo "desktop not recognized, or setup!"
+  echo "Desktop not recognized, or setup!"
   exit 1
   ;;
 esac
@@ -36,7 +48,7 @@ if test -s $packages && test -s $packages_personal; then
       fi
     done<$packages_personal
 else
-  echo "Error: $packages/$packages_personal doesn't exist."
+  echo "Error: $packages OR $packages_personal doesn't exist."
   exit 1
 fi
 

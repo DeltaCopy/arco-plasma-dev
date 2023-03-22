@@ -28,6 +28,9 @@ echo
 
 	desktop="plasma"
 	dmDesktop="plasma"
+	# Fetch desktop iso, or plasma packages_x86_64 file from GitHub
+	#packages_x86_64="plasma"
+	packages_x86_64="arco-desktop"
 
 	arcolinuxVersion='v23.04.03'
 
@@ -152,15 +155,18 @@ echo
 	echo
 	echo "Git clone the latest ArcoLinux-iso from github"
 	echo
+	test -d ../work && rm -rf ../work
 	git clone https://github.com/arcolinux/arcolinuxl-iso ../work
 	echo
 
 	if [ $personalrepo == true ]; then
-		echo "Adding our own repo to /etc/pacman.conf"
-		printf "\n" | sudo tee -a ../work/archiso/pacman.conf
-		printf "\n" | sudo tee -a ../work/archiso/airootfs/etc/pacman.conf
-		cat personal-repo | sudo tee -a ../work/archiso/pacman.conf
-		cat personal-repo | sudo tee -a ../work/archiso/airootfs/etc/pacman.conf
+		if test -s personal-repo && [[ ! -z $(grep '[^[:space:]]' personal-repo) ]]; then
+			echo "Adding our own repo to /etc/pacman.conf"
+			printf "\n" | sudo tee -a ../work/archiso/pacman.conf
+			printf "\n" | sudo tee -a ../work/archiso/airootfs/etc/pacman.conf
+			cat personal-repo | sudo tee -a ../work/archiso/pacman.conf
+			cat personal-repo | sudo tee -a ../work/archiso/airootfs/etc/pacman.conf
+		fi
 	fi
 
 	echo
@@ -206,15 +212,18 @@ echo
 	rm $buildFolder/archiso/packages.x86_64
 	rm $buildFolder/archiso/packages-personal-repo.x86_64
 	echo
-	echo "Copying the new packages.x86_64 file to the build folder"
-	cp -f ../archiso/packages.x86_64 $buildFolder/archiso/packages.x86_64
+	#echo "Copying the new packages.x86_64 file to the build folder"
+	#cp -f ../archiso/packages.x86_64 $buildFolder/archiso/packages.x86_64
 	echo
 
 	if [ $personalrepo == true ]; then
-		echo "Adding packages from your personal repository - packages-personal-repo.x86_64"
-		printf "\n" | sudo tee -a $buildFolder/archiso/packages.x86_64
-		#cat ../archiso/packages-personal-repo.x86_64 | sudo tee -a $buildFolder/archiso/packages.x86_64
-		if sh gen-package-file.sh "plasma" "$buildFolder"; then
+
+		if test -s $buildFolder/archiso/packages.x86_64; then
+			echo "Adding packages from your personal repository - packages-personal-repo.x86_64"
+			printf "\n" | sudo tee -a $buildFolder/archiso/packages.x86_64
+			#cat ../archiso/packages-personal-repo.x86_64 | sudo tee -a $buildFolder/archiso/packages.x86_64
+		fi
+		if sh gen-package-file.sh "$packages_x86_64" "$buildFolder"; then
 			echo "Package list merged"
 		else
 			echo "Package list merge failed"
@@ -319,7 +328,7 @@ tput sgr0
 echo "###################################################################"
 echo
 
-	
+
 
 	echo "Creating checksums for : "$isoLabel
 	echo "##################################################################"
