@@ -6,10 +6,10 @@ echo "This ignores duplicates, ignore empty lines"
 echo "##################################################################"
 
 
-packages_x86_64=$1
+desktop=$1
 buildFolder=$2
 
-if [ -z "$packages_x86_64" ] || [ -z $buildFolder ]; then
+if [ -z "$desktop" ] || [ -z $buildFolder ]; then
   echo "Desktop or build folder name cannot be empty"
   exit 1
 fi
@@ -20,15 +20,11 @@ packages_tmp=()
 github_arcob_url="https://raw.githubusercontent.com/arcolinuxb/arco-$desktop/master/archiso/packages.x86_64"
 github_arcod_url="https://raw.githubusercontent.com/arcolinux/arcolinuxd-iso/master/archiso/packages.x86_64"
 # a guard in case we don't get a valid desktop name
-case $packages_x86_64 in
+case $desktop in
   "arco-plasma")
     echo "Generating packages list for ArcoLinuxB-Plasma"
     desktop="plasma"
     wget -q "$github_arcob_url" -O $packages
-  ;;
-  "arco-desktop")
-    echo "Generating packages list for ArcoLinux-D"
-    wget -q "$github_arcod_url" -O $packages
   ;;
   *)
   echo "Desktop not recognized, or setup!"

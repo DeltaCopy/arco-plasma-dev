@@ -28,6 +28,36 @@ echo
 		exit 1
 	fi
 
+	# if this is a vanilla arch install setup pacman.conf, and import key
+	test -s /etc/pacman.d/arcolinux-mirrorlist ||
+		cat << EOF > /etc/pacman.d/arcolinux-mirrorlist
+		# Europe Netherlands Amsterdam
+#Server = https://ant.seedhost.eu/arcolinux/$repo/$arch
+
+# Gitlab United States
+Server = https://gitlab.com/arcolinux/$repo/-/raw/main/$arch
+
+# Sweden - accum.se
+Server = https://mirror.accum.se/mirror/arcolinux.info/$repo/$arch
+
+# Europe Belgium Brussels
+Server = https://ftp.belnet.be/arcolinux/$repo/$arch
+
+# Australia
+Server = https://mirror.aarnet.edu.au/pub/arcolinux/$repo/$arch
+
+# South Korea
+Server = https://mirror.funami.tech/arcolinux/$repo/$arch
+
+# Singapore
+Server = https://mirror.jingk.ai/arcolinux/$repo/$arch
+
+# United States San Francisco - no xlarge repo here
+Server = https://arcolinux.github.io/$repo/$arch
+EOF
+
+	pacman-key --lsign-key 74F5DE85A506BF64
+
 	#Let us set the desktop"
 	#First letter of desktop is small letter
 
@@ -35,7 +65,7 @@ echo
 	dmDesktop="plasma"
 	# Fetch desktop iso, or plasma packages_x86_64 file from GitHub
 	#packages_x86_64="plasma"
-	packages_x86_64="arco-desktop"
+
 
 	arcolinuxVersion='v23.04.03'
 
@@ -228,7 +258,7 @@ echo
 			printf "\n" | sudo tee -a $buildFolder/archiso/packages.x86_64
 			#cat ../archiso/packages-personal-repo.x86_64 | sudo tee -a $buildFolder/archiso/packages.x86_64
 		fi
-		if sh gen-package-file.sh "$packages_x86_64" "$buildFolder"; then
+		if sh gen-package-file.sh "$desktop" "$buildFolder"; then
 			echo "Package list merged"
 		else
 			echo "Package list merge failed"
