@@ -18,12 +18,12 @@ packages="$buildFolder/archiso/packages.x86_64"
 packages_personal="../archiso/packages-personal-repo.x86_64"
 packages_tmp=()
 github_arcob_url="https://raw.githubusercontent.com/arcolinuxb/arco-$desktop/master/archiso/packages.x86_64"
-github_arcod_url="https://raw.githubusercontent.com/arcolinux/arcolinuxd-iso/master/archiso/packages.x86_64"
+
 # a guard in case we don't get a valid desktop name
 case $desktop in
-  "arco-plasma")
+  "plasma")
     echo "Generating packages list for ArcoLinuxB-Plasma"
-    desktop="plasma"
+
     wget -q "$github_arcob_url" -O $packages
   ;;
   *)
