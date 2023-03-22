@@ -23,6 +23,11 @@ tput sgr0
 echo "################################################################## "
 echo
 
+	if ! type "wget" > /dev/null; then
+		echo "wget not found, install it and retry the install"
+		exit 1
+	fi
+
 	#Let us set the desktop"
 	#First letter of desktop is small letter
 
