@@ -56,8 +56,6 @@ Server = https://mirror.jingk.ai/arcolinux/$repo/$arch
 Server = https://arcolinux.github.io/$repo/$arch
 EOF
 
-	pacman-key --lsign-key 74F5DE85A506BF64
-
 	#Let us set the desktop"
 	#First letter of desktop is small letter
 
@@ -125,6 +123,8 @@ echo
 	package="archiso"
 
 	#----------------------------------------------------------------------------------
+
+	sudo pacman-key --lsign-key 74F5DE85A506BF64
 
 	#checking if application is already installed or else install with aur helpers
 	if pacman -Qi $package &> /dev/null; then

@@ -6,7 +6,7 @@ aur_packages=("lightly-git" "chromium-extension-ublock-origin" "libva-nvidia-dri
 
 if [ ! -z "$konsave_backup" ]; then
   if test -s "$konsave_import_file"; then
-    konsave -i "$konsave_import_file" 
+    konsave -i "$konsave_import_file"
   fi
 fi
 
@@ -18,8 +18,3 @@ done
 for aur_pkg in "${aur_packages[@]}"; do
   yay -S --noconfirm --cleanafter "$aur_pkg"
 done
-
-# copy /personal/.config over to $HOME
-# copy /personal/usr/local/bin over to /usr/local/bin
-
-alias personal && personal
